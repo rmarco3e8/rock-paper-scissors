@@ -1,4 +1,6 @@
 const choices = ["Rock", "Paper", "Scissors"];
+const score = [0, 0];
+gameOver = false;
 
 // Return 'Rock', 'Papers', or 'Scissors' randomly
 function computerPlay() {
@@ -50,61 +52,70 @@ function declareWinner(playerScore, computerScore) {
 }
 
 // Returns 1 for player wins, 0 for tie, and -1  for computer wins
-function playRound(playerSelection, computerSelection) {
-    let playerParsed = parseInput(playerSelection)
-    let computerParsed = parseInput(computerSelection)
+function playRound(playerSelection) {
+    let computerSelection = computerPlay();
 
-    if (playerParsed === computerParsed) {
+    if (playerSelection === computerSelection) {
         return 0;
     }
 
-    if (playerParsed === "Rock") {
+    if (playerSelection === "Rock") {
         
-        if (computerParsed === "Scissors") {
+        if (computerSelection === "Scissors") {
             return 1;
         }
         return -1;
     } 
     
-    else if (playerParsed === "Paper") {
+    else if (playerSelection === "Paper") {
 
-        if (computerParsed === "Rock") {
+        if (computerSelection === "Rock") {
             return 1;
         }
         return -1;
     }
 
     // playerParsed === "Scissors"
-    if (computerParsed === "Paper") {
+    if (computerSelection === "Paper") {
         return 1;
     }
     return -1;
 }
 
-function game() {
-    let playerScore = 0;
-    let computerScore = 0;
+function updateScoreBoard(playerSelection) {
+    outcome = playRound(playerSelection);
 
-    for (let round=0; round<5; round++) {
-        computerSelection = computerPlay();
-        playerSelection = parseInput(prompt("Enter Rock, Paper, or Scissors!"));
+    scoreBoard = document.querySelector(".scoreboard");
+    notifications = document.querySelector(".notifications");
 
-        while (!checkSelection(playerSelection)) {
-            playerSelection = parseInput(prompt("Enter Rock, Paper, or Scissors!"));
-        }
-
-        outcome = playRound(playerSelection, computerSelection);
-
-        logOutput(playerSelection, computerSelection, outcome);
-
-        if (outcome === 1) {
-            playerScore++;
-        }
-
-        else if (outcome === -1) {
-            computerScore++;
-        }
+    if (outcome === 1) {
+        score[1]++;
+        notifications.innerHTML = "Nice one!";
     }
 
-    declareWinner(playerScore, computerScore);
+    else if (outcome === -1) {
+        score[0]++;
+        notifications.innerHTML = "Darn...";
+    }
+
+    else {
+        notifications.innerHTML = "It's a tie.";
+    }
+
+    scoreBoard.innerHTML = `Computer: ${score[0]} | You: ${score[1]}`;
+
+    checkForWinner();
+}
+
+function checkForWinner() {
+    if (gameOver) return;
+
+    if (score[0] === 5) {
+        alert("Curses!! The machines won!");
+        gameOver = true;
+    }
+    else if (score[1] === 5) {
+        alert("Yippee!! Humanity won!");
+        gameOver = true;
+    }
 }
